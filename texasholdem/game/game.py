@@ -11,6 +11,20 @@ It also includes the main :class:`TexasHoldEm` class.
 """
 from __future__ import annotations
 
+# # importing module
+# import logging
+#
+# # Create and configure logger
+# logging.basicConfig(filename="newfile.log",
+#                     format='%(asctime)s %(message)s',
+#                     filemode='a')
+#
+# # Creating an object
+# logger = logging.getLogger()
+#
+# # Setting the threshold of logger to DEBUG
+# logger.setLevel(logging.DEBUG)
+
 import os
 from typing import Iterator, Callable, Dict, Tuple, Optional, Union, List, Iterable
 from collections import deque
@@ -253,14 +267,19 @@ class TexasHoldEm:
 
     """
 
-    def __init__(self, buyin: int, big_blind: int, small_blind: int, max_players=9):
-        self.buyin = buyin
+    # def __init__(self, buyin: int, big_blind: int, small_blind: int, max_players=9):
+    def __init__(self, big_blind: int, small_blind: int, chips: [int]):
+        # self.buyin = buyin
         self.big_blind = big_blind
         self.small_blind = small_blind
-        self.max_players = max_players
+        # self.max_players = max_players
+        self.max_players = len(chips)
 
+        # self.players: List[Player] = list(
+        #     Player(i, self.buyin) for i in range(max_players)
+        # )
         self.players: List[Player] = list(
-            Player(i, self.buyin) for i in range(max_players)
+            Player(i, chips[i]) for i in range(self.max_players)
         )
 
         self.btn_loc = random.choice(self.players).player_id
@@ -1113,6 +1132,7 @@ class TexasHoldEm:
             ValueError: If no hand is running or if the move is invalid.
 
         """
+
         if not self.is_hand_running():
             raise ValueError("No hand is running")
 
@@ -1227,11 +1247,16 @@ class TexasHoldEm:
         """
         # pylint: disable=protected-access
         num_players = len(history.prehand.player_chips)
+        # game = TexasHoldEm(
+        #     buyin=1,
+        #     big_blind=history.prehand.big_blind,
+        #     small_blind=history.prehand.small_blind,
+        #     max_players=num_players,
+        # )
         game = TexasHoldEm(
-            buyin=1,
             big_blind=history.prehand.big_blind,
             small_blind=history.prehand.small_blind,
-            max_players=num_players,
+            chips=history.prehand.player_chips,
         )
 
         # button placed right before 0
@@ -1293,11 +1318,16 @@ class TexasHoldEm:
 
         """
         # pylint: disable=protected-access
+        # game = TexasHoldEm(
+        #     buyin=self.buyin,
+        #     big_blind=self.big_blind,
+        #     small_blind=self.small_blind,
+        #     max_players=len(self.players),
+        # )
         game = TexasHoldEm(
-            buyin=self.buyin,
-            big_blind=self.big_blind,
-            small_blind=self.small_blind,
-            max_players=len(self.players),
+            big_blind=history.prehand.big_blind,
+            small_blind=history.prehand.small_blind,
+            chips=history.prehand.player_chips,
         )
 
         # general info
