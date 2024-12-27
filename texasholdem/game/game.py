@@ -264,6 +264,7 @@ class TexasHoldEm:
         game_state (GameState): The current GameState
         hand_history (History): The history of the current hand.
         action (Tuple[ActionType, Optional[int]]) : get the last action of the game.
+        external_chips_variation: some player join the game, leave the game, or buy the chips
 
     """
 
@@ -313,6 +314,8 @@ class TexasHoldEm:
         self._action = None, None
         self._hand_gen = None
 
+        self.external_chips_variation = {}
+
     @property
     def action(self) -> Tuple[ActionType, Optional[int]]:
         """
@@ -328,6 +331,12 @@ class TexasHoldEm:
         """
         if self.hand_phase != HandPhase.PREHAND:
             raise ValueError("Not time for prehand!")
+
+        # update chips for players
+        for key in self.external_chips_variation.keys():
+            self.players[int(key)].chips += self.external_chips_variation[key]
+        # reset external_chips_variation
+        self.external_chips_variation = {}
 
         # set statuses for players
         for player_id in self.player_iter(loc=0):
